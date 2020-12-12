@@ -1,41 +1,26 @@
 const express = require('express');
 const app = express();
-const { MongoClient } = require('mongodb');
-
+const mongoose = require('mongoose');
 
 const mongoUri = 'mongodb+srv://admin:testing123@cluster0.3nee9.mongodb.net?retryWrites=true&w=majority';
-const client = new MongoClient(mongoUri);
+mongoose.connect(mongoUri,{
+    useNewUrlParser: true, 
+    useUnifiedTopology: true
+});
+
+//////////////////////////////////
+
+const carSchema = mongoose.Schema({
+    brand: String,
+    model:String,
+    year: Number,
+    avail: Boolean
+});
+
+const Car = mongoose.model('Car',carSchema);
 
 
-app.get('/api/users', async(req,res)=>{
-   try {
-    await client.connect();
-    const database = client.db('myApp');
-    const collection = database.collection('users')
-    const query = await collection.insertOne({
-        name:"Francis",
-        lastname:"Jones"
-    });
-
-    console.log(query)
-
-    res.status(200).json({awesome:'yes'});
-   } catch(error) {
-    throw error;
-   } finally {
-    await client.close();
-    console.log('all is done')
-   }
-})
-
-
-// MongoClient.connect(mongoUri,{ useUnifiedTopology: true },(err, client)=>{
-//     if(err){
-//         throw err;
-//     }
-//     console.log('connected to the db')
-// })
-
+/////////////////////////////////
 
 const port = process.env.PORT || 3001;
 app.listen(port)
