@@ -4,18 +4,28 @@ const { MongoClient } = require('mongodb');
 
 
 const mongoUri = 'mongodb+srv://admin:testing123@cluster0.3nee9.mongodb.net?retryWrites=true&w=majority';
+const client = new MongoClient(mongoUri);
 
-app.get('/api/users',(req,res)=>{
-    res.json([
-        {
-            id:1,
-            username:'Francis'
-        },
-        {
-            id:1,
-            username:'Steve'
-        }
-    ])
+
+app.get('/api/users', async(req,res)=>{
+   try {
+    await client.connect();
+    const database = client.db('myApp');
+    const collection = database.collection('users')
+    const query = await collection.insertOne({
+        name:"Francis",
+        lastname:"Jones"
+    });
+
+    console.log(query)
+
+    res.status(200).json({awesome:'yes'});
+   } catch(error) {
+    throw error;
+   } finally {
+    await client.close();
+    console.log('all is done')
+   }
 })
 
 
